@@ -1,10 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PanelText_Manager : MonoBehaviour
 {
+
+
+    [Header("各種データの表示箇所")]
     public Text timeText;
 
     public Text defeatText;
@@ -15,21 +19,32 @@ public class PanelText_Manager : MonoBehaviour
 
     public Text commentText;
 
+
+    [Header("コメントなどのプリセットデータ")]
+
+    public ResultTextLists useDatas;
+
+
+    [Header("プレイデータ")]
+
     GameObject gameManager;
+
+    PlayDataClone cloneData;
+
+    public string SmouRank;
+
+
+
+
+
 
 
     void Start()
     {
+        PlayDataClone cloneData = new PlayDataClone();
 
-
-        //プレイ内容を、確認するために、ゲームマネージャーを取得。
-        //gameManager = TypeConvert(GameObject.Find("GameManager"));
-
-        //プレイ記録を、評価値として使うために、定量化する。
-        //GameLog_Quantification();
-
-        //評価値を使って、プレイを格付けする。
-        //Graded_PlayRank();
+        //プレイデータを使って表示用データへの変換を行う
+        PlayDataConvert(cloneData);
 
 
 
@@ -40,8 +55,18 @@ public class PanelText_Manager : MonoBehaviour
         finishFactorText.text = "";
         commentText.text = "";
 
-        //
-        //DisplayText();
+
+
+
+
+
+        //中身を改定する
+        timeText.text = cloneData.timeData;
+        defeatText.text = cloneData.killData;
+        enemyText.text = cloneData.enemyType;
+        finishFactorText.text = useDatas.finishFactorList[0];
+        commentText.text = useDatas.commentList[0];
+
 
     }
 
@@ -57,47 +82,95 @@ public class PanelText_Manager : MonoBehaviour
 
 
 
-    // public void Graded_PlayRank(評価値)
-    // {
-    //     return コメント番号、決まり手、番付
-    // }
-
-    // public void GameLog_Quantification(生存時間, 倒した敵の数)
-    // {
-    //     pass
-
-    //     /*
-    //     if (開始すぐならうーん)
-    //     else if (１０分以内なら序盤)
-    //     else if (２０分以内なら中盤)
-    //     else if (２７分以内なら終盤)
-    //     else if (３０分未満なら惜しい！)
-    //     else if (３０分を越えていたらクリア判定)
-    //     else //なにかおかしい！
-    //     */
-
-    //     /*
-    //     if(倒した敵の数が、１００以内なら、)
-    //     */
-
-    //     //結果としてランク評価のための数値をはじき出す。
-    //     //生存時間評価 ＋ 倒した敵の数 
-
-    //     //return 評価値
-
-    // }
-
-
-    public GameObject TypeConvert(GameObject gameManager)
+    public void PlayRankGrade(TestManager tester)
     {
-        //おそらくfloatで、生存時間を文字列に変換する
-        //おそらくintで、倒した敵の数を文字列に変換する
-        return gameManager;
+
+
+        if (tester.time > 0)
+        {
+            this.SmouRank = "序の口";
+        }
+        if (tester.time > 5)
+        {
+            this.SmouRank = "三段目";
+
+            this.SmouRank = "序二段";
+        }
+        else if (tester.time > 10)
+        {
+            this.SmouRank = "前頭";
+            this.SmouRank = "十両";
+            this.SmouRank = "幕内";
+        }
+        else if (tester.time > 15)
+        {
+            this.SmouRank = "小結";
+        }
+        else if (tester.time > 20)
+        {
+            this.SmouRank = "関脇";
+        }
+        else if (tester.time > 27)
+        {
+            this.SmouRank = "大関";
+        }
+        else if (tester.time > 30)
+        {
+            this.SmouRank = "横綱";
+        }
+        else { Debug.Log("timeの値がおかしいです"); }
+
+
+        if (tester.killEnemy > 0) { }
+        else if (tester.killEnemy > 100) { }
+        else if (tester.killEnemy > 200) { }
+        else if (tester.killEnemy > 300) { }
+        else if (tester.killEnemy > 500) { }
+        else if (tester.killEnemy > 700) { }
+        else if (tester.killEnemy > 900) { }
+        else if (tester.killEnemy > 1000) { }
+        else if (tester.killEnemy > 1500) { }
+        else if (tester.killEnemy > 2000) { }
+        else { }
+
+
+        //結果としてランク評価のための数値をはじき出す。
+        //生存時間評価 ＋ 倒した敵の数 
+
+    }
+
+
+    public void PlayDataConvert(PlayDataClone cloneData)
+    {
+
+
+
+
+        //テスト用のゲームマネージャーオブジェクトを探してくる。
+        this.gameManager = GameObject.Find("TestManager");
+
+        //その中からプレイデータが入ったスクリプトをゲットコンポーネント。
+        TestManager tester = gameManager.GetComponent<TestManager>();
+
+
+        //プレイデータを使って、プレイを格付けする。
+        PlayRankGrade(tester);
+
+        //プレイデータから、文字列型のデータクローンを作る。
+        cloneData.timeData = tester.time.ToString();
+        cloneData.killData = tester.killEnemy.ToString();
+        cloneData.enemyType = tester.enemyType.ToString();
+
+
+
+
     }
 
 
 
-    //テキスト内容を変更するメソッド 
+
+
+    //表示部分にセットする用 
     //\nを入れることで改行が可能
     public void Set_TimeText(float setText)
     {

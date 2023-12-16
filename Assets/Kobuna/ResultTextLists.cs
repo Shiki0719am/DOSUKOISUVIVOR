@@ -2,11 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Comment", menuName = "DOSUKOISUVIVOR/Comment", order = 0)]
+[CreateAssetMenu(fileName = "ResultTextLists", menuName = "DOSUKOISUVIVOR/ResultTextLists", order = 0)]
 
-public class CommentData : ScriptableObject
+public class ResultTextLists : ScriptableObject
 {
-    public string CommentText;
+    public List<string> commentList;
+    public List<string> enemyNameList;
+    public List<string> finishFactorList;
+
+
+
+
+
+
     //public DataType commentType;
     //他の型を作りたい場合。
 }
