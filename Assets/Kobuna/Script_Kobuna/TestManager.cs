@@ -11,9 +11,6 @@ public class TestManager : MonoBehaviour
 
     void Start()
     {
-        time = 10.0f;
-        killEnemy = 20;
-        enemyType = "力士";
     }
 
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,19 +11,14 @@ public class ResultTextLists : ScriptableObject
     public List<string> enemyNameList;
     public List<string> finishFactorList;
 
+    public List<string> banzukeList;
+    public List<SumouData> sumouList;
 
 
-
-
-
-    //public DataType commentType;
-    //他の型を作りたい場合。
+    [Serializable]
+    public class SumouData
+    {
+        public string name;
+        public int time;
+    }
 }
-
-// public enum DataType
-// {
-//     General,
-//     Important,
-//     Hint,
-//     // 他のコメントの種類
-// }

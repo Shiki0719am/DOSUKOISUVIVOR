@@ -19,9 +19,9 @@ MonoBehaviour:
   - "\u30AE\u30EA\u30AE\u30EA\u9650\u754C\u3042\u3068\u3061\u3087\u3063\u3068\uFF01\uFF01"
   - "\u30AF\u30EA\u30A2\uFF01\uFF01\uFF01\uFF01"
   enemyNameList:
-  - "\u30DC\u30D6"
-  - "\u30B8\u30E7\u30F3"
-  - "\u7530\u4E2D"
+  - "\u30DC\u30D6\u30FB\u30B7\u30C3\u30C8"
+  - "\u30B8\u30E7\u30CB\u30FC\u7AF9\u5D0E"
+  - "\u7530\u4E2D\u592A\u90CE\u5C71"
   - "\u9234\u6728"
   - "\u6D41\u30CE\u82B1"
   finishFactorList:
@@ -30,3 +30,21 @@ MonoBehaviour:
   - "\u72F8\u8FD4\u3057"
   - "\u72AC\u3060\u307E\u3057"
   - "\u3064\u3063\u3071\u308A"
+  - "\u3064\u3063\u3071\u308A"
+  - "\u3064\u3063\u3071\u308A"
+  banzukeList:
+  - "\u5E8F\u306E\u53E3"
+  - "\u5E8F\u4E8C\u6BB5"
+  - "\u4E09\u6BB5\u76EE"
+  - "\u5E55\u5185"
+  - "\u5341\u4E21"
+  - "\u524D\u982D"
+  - "\u5C0F\u7D50"
+  - "\u95A2\u8107"
+  - "\u5927\u95A2"
+  - "\u6A2A\u7DB1"
+  sumouList:
+  - name: jonokuti
+    time: 10
+  - name: 
+    time: 0
