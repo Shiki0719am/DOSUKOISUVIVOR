@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,10 +16,12 @@ public class ResultData_Manager : MonoBehaviour
     public Text defeat;
 
     public Text enemy;
+    public Text skill;
 
     public Text finishFactor;
 
     public Text comment;
+    public Text rank;
 
 
     [Header("コメントなどのプリセットデータ")]
@@ -32,30 +35,15 @@ public class ResultData_Manager : MonoBehaviour
 
     StrPlayData viewData;
 
-    public string SmouRank;
+    public string playerRank;
     public string commentRank;
 
 
-
-
+    // 任意の時間差
+    public float delayBetweenLines = 0.3f;
 
 
     void Start()
-    {
-
-        //Stringモデルクラス
-        viewData = new StrPlayData();
-
-        //モデルに格納する文字列データを作る
-        CreateViewText(viewData);
-
-        //
-        //UpdateViewText();
-
-
-    }
-
-    public void UpdateViewText()
     {
         //シーン内テキストオブジェクトを初期化
         time.text = "";
@@ -65,22 +53,69 @@ public class ResultData_Manager : MonoBehaviour
         comment.text = "";
 
 
-        //フォーマット済データを反映
-        time.text = viewData.timeCount;
-        defeat.text = viewData.killCount;
-        enemy.text = viewData.enemyType;
-        //ランク評価後、反映
-        finishFactor.text = useDatas.finishFactorList[0];
-        comment.text = useDatas.commentList[0];
+        //Stringモデルクラス
+        viewData = new StrPlayData();
+
+        //モデルに格納する文字列データを作る
+        CreateViewText(viewData);
+
+        //
+        //UpdateViewText();
+        StartCoroutine(UpdateViewText());
+
+
+
     }
+
+    // public void UpdateViewText()
+    // {
+    //     //フォーマット済データを反映
+    //     time.text = viewData.timeCount;
+    //     defeat.text = viewData.killCount;
+    //     enemy.text = viewData.enemyType;
+    //     rank.text = playerRank;
+    //     //ランク評価後、反映
+    //     finishFactor.text = useDatas.finishFactorList[0];
+    //     comment.text = useDatas.commentList[0];
+    // }
+
+
+
+
+    private IEnumerator UpdateViewText()
+    {
+        // フォーマット済データを反映
+        time.text = viewData.timeCount;
+        yield return StartCoroutine(Wait());
+
+        defeat.text = viewData.killCount;
+        yield return StartCoroutine(Wait());
+
+        skill.text = "◆◆　◆◆　◆◆　◆◆　◆◆ \n ◆◆　◆◆　◆◆　◆◆　◆◆";
+        yield return StartCoroutine(Wait());
+
+
+        // 最終的なコメントの反映
+        comment.text = useDatas.commentList[0];
+        yield return StartCoroutine(Wait());
+
+
+        // 3つ目の処理完了後、特定の時間を待ってから次の処理
+        rank.text = playerRank;
+    }
+
+    private IEnumerator Wait()
+    {
+        // 任意の時間を待つ
+        yield return new WaitForSeconds(delayBetweenLines);
+    }
+
 
 
 
 
     public void CreateViewText(StrPlayData viewData)
     {
-
-
         //プレイデータを探してくる。
         this.gameManager = GameObject.Find("TestManager");
 
@@ -92,20 +127,17 @@ public class ResultData_Manager : MonoBehaviour
         PlayRankGrade(tester);
 
         //選択する
-        viewData.choicedFinishFactor = useDatas.finishFactorList[0];
-        viewData.choicedComment = useDatas.commentList[0];
-        viewData.choicedSumouRank = useDatas.banzukeList[0];
+        //viewData.choicedFinishFactor = useDatas.finishFactorList[0];
+        //viewData.choicedComment = useDatas.commentList[0];
+        // viewData.currentRank = playerRank;
 
 
         //データを文字列化し、かつ、漢数字にフォーマットしたものを、
-        viewData.timeCount = $" {ToKanjiNumber(tester.time)}ふん";
-        viewData.killCount = $" {ToKanjiNumber(tester.killEnemy)}勝ち";
+        viewData.timeCount = $" {ToKanjiNumber(tester.time)} ふん" + "\n" + $" {ToKanjiNumber(tester.time)} びょう";
+        viewData.killCount = $" {ToKanjiNumber(tester.killEnemy)} 勝ち";
         viewData.enemyType = tester.enemyType.ToString();
-
-
-
-
     }
+
 
 
 
@@ -113,85 +145,17 @@ public class ResultData_Manager : MonoBehaviour
     public void PlayRankGrade(TestManager tester)
     {
 
-        //生存時間が伸びることによって、番付のランクが変わる？
-
-        //倒した敵の数によって、コメントが変化する？
-
-        // public string SmouRank;
-        // public string commentRank;
-
-
-
-
-
-
-
-
-
-
-        //プラン１ ifのネストで内容を書き換える
-
-        //問題点 他のデータはスクリプタブルオブジェクトでまとめているので、データはそちらでまとめたい。
-        if (tester.time > 0)
+        //番付リストから対応する格付けを探してくる
+        foreach (Banzuke banzuke in useDatas.banzukeList)
         {
-            this.SmouRank = useDatas.banzukeList[0];
-
+            if (tester.time < banzuke.time)
+            {
+                playerRank = banzuke.name;
+                break;
+            }
         }
-        if (tester.time > 5)
-        {
-            this.SmouRank = useDatas.banzukeList[1];
 
-            this.SmouRank = useDatas.banzukeList[2];
-        }
-        else if (tester.time > 10)
-        {
-            this.SmouRank = "前頭";
-            this.SmouRank = "十両";
-            this.SmouRank = "幕内";
-        }
-        else if (tester.time > 15)
-        {
-            this.SmouRank = "小結";
-        }
-        else if (tester.time > 20)
-        {
-            this.SmouRank = "関脇";
-        }
-        else if (tester.time > 27)
-        {
-            this.SmouRank = "大関";
-        }
-        else if (tester.time > 30)
-        {
-            this.SmouRank = "横綱";
-        }
-        else { Debug.Log("timeの値がおかしいです"); }
-
-
-        //プラン２ スイッチ文の中のIF文で分岐
-        //問題点、リストと離れてしまう
-
-        // int suviveTime = 0;
-
-        //   switch (suviveTime)
-        // {
-        //     case int s when s >= 90:
-        //         this.SmouRank = useDatas.banzukeList[0];
-
-        //     case int s when s >= 80:
-        //     case int s when s >= 70:
-        //     case int s when s >= 60:
-
-
-        //     default:
-        //         return "ビギナー";
-        // }
-
-        //プラン3
-
-
-
-
+        //useDatas.banzukeList[0];
 
         if (tester.killEnemy > 0) { }
         else if (tester.killEnemy > 100) { }
@@ -218,7 +182,7 @@ public class ResultData_Manager : MonoBehaviour
     static string ToKanjiNumber(int number)
     {
         string[] kanjiDigits = { "〇", "一", "二", "三", "四", "五", "六", "七", "八", "九" };
-        string[] kanjiUnits = { "", "十", "百", "千" };
+        string[] kanjiUnits = { "", "十", "百\n", "千\n" };
 
         StringBuilder result = new StringBuilder();
         char[] digits = number.ToString().ToCharArray();

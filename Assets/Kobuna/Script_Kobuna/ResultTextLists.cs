@@ -7,18 +7,18 @@ using UnityEngine;
 
 public class ResultTextLists : ScriptableObject
 {
+    [TextAreaAttribute]
     public List<string> commentList;
     public List<string> enemyNameList;
     public List<string> finishFactorList;
 
-    public List<string> banzukeList;
-    public List<SumouData> sumouList;
+    public List<Banzuke> banzukeList;
 
+}
 
-    [Serializable]
-    public class SumouData
-    {
-        public string name;
-        public int time;
-    }
+[Serializable]
+public class Banzuke
+{
+    public string name;
+    public int time;
 }
