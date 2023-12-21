@@ -72,6 +72,8 @@ public class ResultData_Manager : MonoBehaviour
 
     void Update()
     {
+
+
         if (coroutine == null && !viewanim.IsAnimating)
         {
             //UpdateViewText();
@@ -109,7 +111,23 @@ public class ResultData_Manager : MonoBehaviour
     private IEnumerator Wait()
     {
         // 任意の時間を待つ
-        yield return new WaitForSeconds(delayTime);
+        // yield return new WaitForSeconds(delayTime);
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < delayTime)
+        {
+            if (Input.GetMouseButtonDown(0)) // クリックを検出
+            {
+                break; // クリックが検出されたらループを終了
+            }
+
+            elapsedTime += Time.deltaTime;
+            yield return null; // 次のフレームまで待機
+
+
+
+        }
     }
 
 
