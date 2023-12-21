@@ -9,7 +9,4 @@ public class StrPlayData
     public string killCount;
     public string enemyType;
 
-    // public string choicedComment;
-    // public string choicedFinishFactor;
-    //public string currentRank;
 }

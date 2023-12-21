@@ -12,16 +12,14 @@ public class ResultData_Manager : MonoBehaviour
 
     [Header("各種テキストの表示箇所")]
     public Text time;
-
     public Text defeat;
-
-    public Text enemy;
     public Text skill;
-
-    public Text finishFactor;
-
     public Text comment;
     public Text rank;
+
+
+    public Text enemy;
+    public Text finishFactor;
 
 
     [Header("コメントなどのプリセットデータ")]
@@ -39,13 +37,23 @@ public class ResultData_Manager : MonoBehaviour
     public string commentRank;
 
 
-    // 任意の時間差
-    public float delayBetweenLines = 0.3f;
+
+    //文字データの表示アニメは、このメソッドが受け持つが、
+    //巻物を開くアニメは、リザルトビュー内のスクリプトで実行しているので、
+    //リザルトビューを参照し、巻物アニメの再生が終わったかどうかの情報をとる。
+    public ResultViewAnimation viewanim;
+
+    //アニメーションコルーチンが実行されるときに格納される。
+    //アニメーションが実行されたら、ここに中身が入るので、nullな場合のみアニメ実行で、アニメ再生を１回だけ再生する。
+    Coroutine coroutine;
+
+    // アニメ再生のディレイ時間
+    public float delayTime = 0.5f;
 
 
     void Start()
     {
-        //シーン内テキストオブジェクトを初期化
+        //あとで文字を入れたい、テキストオブジェクトに空文字を入れておく。
         time.text = "";
         defeat.text = "";
         enemy.text = "";
@@ -53,61 +61,55 @@ public class ResultData_Manager : MonoBehaviour
         comment.text = "";
 
 
-        //Stringモデルクラス
+        //String型のモデル
         viewData = new StrPlayData();
 
         //モデルに格納する文字列データを作る
         CreateViewText(viewData);
 
-        //
-        //UpdateViewText();
-        StartCoroutine(UpdateViewText());
-
-
 
     }
 
-    // public void UpdateViewText()
-    // {
-    //     //フォーマット済データを反映
-    //     time.text = viewData.timeCount;
-    //     defeat.text = viewData.killCount;
-    //     enemy.text = viewData.enemyType;
-    //     rank.text = playerRank;
-    //     //ランク評価後、反映
-    //     finishFactor.text = useDatas.finishFactorList[0];
-    //     comment.text = useDatas.commentList[0];
-    // }
+    void Update()
+    {
+        if (coroutine == null && !viewanim.IsAnimating)
+        {
+            //UpdateViewText();
+            coroutine = StartCoroutine(UpdateViewText());
+        }
 
-
+    }
 
 
     private IEnumerator UpdateViewText()
     {
-        // フォーマット済データを反映
-        time.text = viewData.timeCount;
+
+        // コルーチンで時間を待ってから、各種テキストを表示する。
+        // フォーマット済の文字列データを、空文字のテキストオブジェクトに、代入することで、表示している。
+
         yield return StartCoroutine(Wait());
+        time.text = viewData.timeCount;//生存時間
 
-        defeat.text = viewData.killCount;
         yield return StartCoroutine(Wait());
+        defeat.text = viewData.killCount;//倒した数
 
-        skill.text = "◆◆　◆◆　◆◆　◆◆　◆◆ \n ◆◆　◆◆　◆◆　◆◆　◆◆";
         yield return StartCoroutine(Wait());
+        skill.text = "◆◆　◆◆　◆◆　◆◆　◆◆ \n◆◆　◆◆　◆◆　◆◆　◆◆";//取得スキルを後で表示する
 
-
-        // 最終的なコメントの反映
-        comment.text = useDatas.commentList[0];
         yield return StartCoroutine(Wait());
+        comment.text = useDatas.commentList[0];//ひとことを反映
+
+        yield return StartCoroutine(Wait());
+        rank.text = playerRank;//番付ランクの反映
 
 
-        // 3つ目の処理完了後、特定の時間を待ってから次の処理
-        rank.text = playerRank;
+
     }
 
     private IEnumerator Wait()
     {
         // 任意の時間を待つ
-        yield return new WaitForSeconds(delayBetweenLines);
+        yield return new WaitForSeconds(delayTime);
     }
 
 
@@ -122,19 +124,12 @@ public class ResultData_Manager : MonoBehaviour
         //スクリプトからフィールドを取得。
         TestManager tester = gameManager.GetComponent<TestManager>();
 
-
         //データを使って、プレイを格付けする。
         PlayRankGrade(tester);
 
-        //選択する
-        //viewData.choicedFinishFactor = useDatas.finishFactorList[0];
-        //viewData.choicedComment = useDatas.commentList[0];
-        // viewData.currentRank = playerRank;
-
-
         //データを文字列化し、かつ、漢数字にフォーマットしたものを、
-        viewData.timeCount = $" {ToKanjiNumber(tester.time)} ふん" + "\n" + $" {ToKanjiNumber(tester.time)} びょう";
-        viewData.killCount = $" {ToKanjiNumber(tester.killEnemy)} 勝ち";
+        viewData.timeCount = $"{ToKanjiNumber(tester.time)} ふん" + "\n" + $"{ToKanjiNumber(tester.time)} びょう";
+        viewData.killCount = $"{ToKanjiNumber(tester.killEnemy)} 勝ち";
         viewData.enemyType = tester.enemyType.ToString();
     }
 
@@ -145,7 +140,8 @@ public class ResultData_Manager : MonoBehaviour
     public void PlayRankGrade(TestManager tester)
     {
 
-        //番付リストから対応する格付けを探してくる
+        //各番付クラスが、基準となるタイムの値を持っているので、それを満たすかをチェック。
+        //番付リストは条件が低い順に入っているので、条件が満たされなかったらbreak。
         foreach (Banzuke banzuke in useDatas.banzukeList)
         {
             if (tester.time < banzuke.time)
@@ -155,8 +151,7 @@ public class ResultData_Manager : MonoBehaviour
             }
         }
 
-        //useDatas.banzukeList[0];
-
+        //倒したエネミーの数をチェックする（評価ロジック未実装）
         if (tester.killEnemy > 0) { }
         else if (tester.killEnemy > 100) { }
         else if (tester.killEnemy > 200) { }
@@ -169,16 +164,14 @@ public class ResultData_Manager : MonoBehaviour
         else if (tester.killEnemy > 2000) { }
         else { }
 
-
-        //結果としてランク評価のための数値をはじき出す。
+        //このあと、ランク評価をもう少し数値で行う？
         //生存時間評価 ＋ 倒した敵の数 
 
     }
 
 
 
-
-
+    //数字を与えられたときに、漢数字の文字列に変換して返す。
     static string ToKanjiNumber(int number)
     {
         string[] kanjiDigits = { "〇", "一", "二", "三", "四", "五", "六", "七", "八", "九" };
