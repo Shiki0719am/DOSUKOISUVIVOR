@@ -43,18 +43,18 @@ public class Playerontroller : MonoBehaviour
         float moveY = Input.GetAxis("Vertical") * Time.deltaTime;//縦矢印入力を値で返し変数「tateyajirushi」に格納 フレームレート調整しスピードとレベルアップで画面停止するためにtime.deltaTime使用
         rb.velocity = new Vector2(moveX * MoveSpeed, moveY * MoveSpeed);
 
-        void OnCollisionEnter2D(Collision2D other)
-        {
-            Rigidbody2D enemyRb = other.gameObject.GetComponent<Rigidbody2D>();
-            Vector2 enemyDir = enemyRb.velocity.normalized;
-            rb.AddForce(enemyDir * KnockBack, ForceMode2D.Impulse);
-            Debug.Log("ダメージ");
+        // void OnCollisionEnter2D(Collision2D other)
+        // {
+        //     Rigidbody2D enemyRb = other.gameObject.GetComponent<Rigidbody2D>();
+        //     Vector2 enemyDir = enemyRb.velocity.normalized;
+        //     rb.AddForce(enemyDir * KnockBack, ForceMode2D.Impulse);
+        //     Debug.Log("ダメージ");
 
 
 
 
 
 
-        }
+        // }
     }
 }
