@@ -8,4 +8,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Kunugiyama/TitleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Sakamoto/MainScene.unity
+    guid: ba7b764f6f8549f4aa8eb5b39d22af77
+  - enabled: 1
+    path: Assets/Kobuna/ResultScene.unity
+    guid: 093701e65883d4544be625d419ba9d2b
   m_configObjects: {}
